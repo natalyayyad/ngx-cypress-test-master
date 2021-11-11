@@ -1,0 +1,10 @@
+{
+  "name": "Nataly Ayyad",
+  "firstname": "Nataly",
+  "lastname": "Ayyad",
+  "email": "hello@cypress.io",
+  "body": "Fixtures are a great way to mock data for responses to routes",
+  "password": "12345",
+  "subject": "Job Opportunity",
+  "website": "https://github.com/akveo/ngx-admin/issues"
+}
