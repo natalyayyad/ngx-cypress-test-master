@@ -2,17 +2,17 @@
 
 import { Forms } from "./forms-modules";
 
-let forms : Forms
+let forms: Forms
 
 describe('forms', () => {
 
-  before( () => {
+  before(() => {
     forms = new Forms()
   })
 
   beforeEach(() => {
     // go to page
-    cy.visit('http://localhost:64240/pages/forms/layouts')
+    cy.visit('http://localhost:4200/pages/forms/layouts')
 
     //pull data
     cy.fixture('example').as('data')
@@ -27,86 +27,79 @@ describe('forms', () => {
   it('visit inline form', () => {
     forms.getCard('Inline form').within(() => {
       cy.get('@data').then((dummydata: any) => {
-        cy.get('input')
-        cy.get('input:first').should('have.attr', 'placeholder', 'Jane Doe').type(dummydata.name)
-        cy.get('input').eq(1).should('have.attr', 'placeholder', 'Email').type(dummydata.email)
-        cy.get('input[type=checkbox]').check({ force: true })
-        cy.submit('primary')
+        forms.getInputElement([{ index: 0, text: dummydata.name }, { index: 1, text: dummydata.email }])
+        forms.checkCheckboxElement([{ index: 0, disabled: false }])
+        forms.assertValue([{ index: 0, text: dummydata.name }, { index: 1, text: dummydata.email }])
+        cy.get('form').submit()
+        forms.assertButtonText('Submit')
+
       })
     })
-    
-    /*
-    cy.get('.form-inline').within(() => {
-      cy.get('@data').then((dummydata: any) => {
-        cy.get('input:first').should('have.attr', 'placeholder', 'Jane Doe').type(dummydata.name)
-        cy.get('input').eq(1).should('have.attr', 'placeholder', 'Email').type(dummydata.email)
-        cy.get('input[type=checkbox]').check({ force: true })
-        cy.submit('primary')
-      })
-    })
-    */
   })
 
   // verify grid form
   it('visit using the grid', () => {
-    cy.get('@data').then((dummydata: any) => {
-      cy.get('#inputEmail1').type(dummydata.email)
-      cy.get('#inputPassword2').type(dummydata.password)
+    forms.getCard('Using the Grid').within(() => {
+      cy.get('@data').then((dummydata: any) => {
+        forms.getInputElement([{ index: 0, text: dummydata.email }, { index: 1, text: dummydata.password }])
+        forms.checkRadioElement([{ index: 0, disabled: false }, { index: 1, disabled: false }, { index: 2, disabled: true }])
+        forms.assertValue([{ index: 0, text: dummydata.email }, { index: 1, text: dummydata.password }])
+        cy.get('form').submit()
+        forms.assertButtonText('Sign in')
+      })
     })
-
-    cy.get('nb-radio').eq(0).click()
-    cy.get('nb-radio').eq(1).click()
-    cy.get('input[type=radio]').eq(2).should('be.disabled')
-
   })
 
   // verify basic form
   it('visit basic form', () => {
-
-    cy.get('@data').then((dummydata: any) => {
-      cy.get('#exampleInputEmail1').type(dummydata.email)
-      cy.get('#exampleInputPassword1').type(dummydata.password)
+    forms.getCard('Basic form').within(() => {
+      cy.get('@data').then((dummydata: any) => {
+        forms.getInputElement([{ index: 0, text: dummydata.email }, { index: 1, text: dummydata.password }])
+        forms.checkCheckboxElement([{ index: 0, disabled: false }])
+        forms.assertValue([{ index: 0, text: dummydata.email }, { index: 1, text: dummydata.password }])
+        cy.get('form').submit()
+        forms.assertButtonText('Submit')
+      })
     })
-    //checkbox here
-    cy.submit('danger')
   })
 
   // verify form without labels
   it('visit form without label', () => {
-    cy.get('@data').then((dummydata: any) => {
-      cy.get('.form-group').children('input').eq(0).should('have.attr', 'placeholder', 'Recipients').type(dummydata.email)
-      cy.get('.form-group').children('input').eq(1).should('have.attr', 'placeholder', 'Subject').type(dummydata.subject)
-      cy.get('textarea').type(dummydata.body)
+    forms.getCard('Form without labels').within(() => {
+      cy.get('@data').then((dummydata: any) => {
+        forms.getInputElement([{ index: 0, text: dummydata.email }, { index: 1, text: dummydata.subject }])
+        cy.get('textarea').type(dummydata.body)
+        forms.assertValue([{ index: 0, text: dummydata.email }, { index: 1, text: dummydata.subject }])
+        cy.get('textarea').then(data => {
+          expect(data.val()).to.equals(dummydata.body)
+        })
+        cy.get('form').submit()
+        forms.assertButtonText('Send')
+      })
     })
-    cy.submit('success')
   })
 
   // verify block form
   it('visit block form', () => {
-    cy.get('@data').then((dummydata: any) => {
-      cy.get('#inputFirstName').type(dummydata.firstname)
-      cy.get('#inputLastName').type(dummydata.lastname)
-      cy.get('#inputEmail').type(dummydata.email)
-      cy.get('#inputWebsite').type(dummydata.website)
-
+    forms.getCard('Block form').within(() => {
+      cy.get('@data').then((dummydata: any) => {
+        forms.getInputElement([{ index: 0, text: dummydata.firstname }, { index: 1, text: dummydata.lastname }, { index: 2, text: dummydata.email }, { index: 3, text: dummydata.website }])
+        forms.assertValue([{ index: 0, text: dummydata.firstname }, { index: 1, text: dummydata.lastname }, { index: 2, text: dummydata.email }, { index: 3, text: dummydata.website }])
+        cy.get(`button[type=submit]`).click()
+        forms.assertButtonText('Submit')
+      })
     })
-    //cy.get('.row').children('').get('button[type=submit]').should('have.attr', 'xpath=1').click()
-    //cy.submit('success')
   })
 
   it('visit horizental form', () => {
-    cy.get('@data').then((dummydata: any) => {
-      cy.get('#inputEmail3').type(dummydata.email)
-      cy.get('#inputPassword3').type(dummydata.password)
+    forms.getCard('Horizontal form').within(() => {
+      cy.get('@data').then((dummydata: any) => {
+        forms.getInputElement([{ index: 0, text: dummydata.email }, { index: 1, text: dummydata.password }])
+        forms.checkCheckboxElement([{ index: 0, disabled: false }])
+        forms.assertValue([{ index: 0, text: dummydata.email }, { index: 1, text: dummydata.password }])
+        cy.get('form').submit()
+        forms.assertButtonText('Sign in')
+      })
     })
-
-    //check box here
-    cy.submit('warning')
   })
-
-  //get, find, contain
-  // best practice for selectors
-  //first fixture
-
-
 })

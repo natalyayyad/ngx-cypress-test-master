@@ -15,16 +15,16 @@ Cypress.Commands.add('signin', (email, password) => {
     cy.get('[type=Password]').type(password)
 })
 
-Cypress.Commands.add('submit', (status?)=>{
-    if(status){
+Cypress.Commands.add('clickButton', (status?) => {
+    if (status) {
         cy.get(`button[type=submit][status=${status}]`).click()
     } else {
         cy.get(`button[type=submit]`).click()
     }
-    
+
 })
 
-Cypress.Commands.add('checkBox', ()=>{
+Cypress.Commands.add('checkBox', () => {
     cy.get('[type=checkbox]').check()
 })
 //

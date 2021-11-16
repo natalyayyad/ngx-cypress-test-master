@@ -17,8 +17,16 @@
       "es2017",
       "dom"
     ],
+    "types": [
+      "cypress"
+    ],
     "plugins": [
-      { "name": "tslint-language-service"}
+      {
+        "name": "tslint-language-service"
+      }
     ]
-  }
+  },
+  "include": [
+    "**/*.ts"
+  ]
 }
