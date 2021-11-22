@@ -53,13 +53,16 @@ export class Tables {
     updateRowByID(placeholder: string, elements: InputElementPlaceHolder[]) {
         this.getColumnByPlaceHolder("ID").type(placeholder)
         var index: number = +placeholder;
+        cy.wait(1000)
         table.getTable('Smart Table').find('tbody tr').each((row) => {
-            let here = row
+            cy.log(row + "")
             cy.wrap(row).find('td').eq(1).invoke('text').then(data => {
-                cy.log(data)
+                //cy.log(data)
                 if (data == placeholder) {
                     //expect(data).to.equals(placeholder);
-                    cy.wrap(here).find('.nb-edit').click()
+
+                    //cy.get('tbody tr').eq(3).find('.nb-edit').click()
+                    cy.wrap(row).find('.nb-edit').click()
                     this.fillRowByColumnPlaceHolderWithClear(elements)
                     cy.wrap(row).find('.nb-checkmark').click()
                     this.getColumnByPlaceHolder("ID").clear()
@@ -85,7 +88,7 @@ export class Tables {
     deleteRowByIndex(index: number) {
         const stub = cy.stub();
         cy.on('window:confirm', stub);
-        cy.get('tbody tr').eq(index).find('.nb-trash').click({ force: true }).then(() => {
+        cy.get('tbody tr').eq(index).find('.nb-trash').click().then(() => {
             expect(stub.getCall(0)).to.be.calledWith('Are you sure you want to delete?');
         });
     }

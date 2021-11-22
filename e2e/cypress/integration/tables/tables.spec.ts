@@ -1,17 +1,13 @@
 /// <reference types="cypress" />
-import { Forms } from "../forms/forms-modules";
 import { table } from "./tables-modules";
 
 describe('tables', () => {
 
     beforeEach(() => {
-        // go to page
         cy.visit("http://localhost:4200/pages/")
         cy.contains('Tables & Data').click()
         cy.contains('Smart Table').click()
         cy.get('.sidebar-toggle').click()
-        //cy.visit('http://localhost:4200/pages/tables/smart-table')
-        //pull data
         cy.fixture('example').as('data')
     })
 
@@ -41,7 +37,6 @@ describe('tables', () => {
                 { placeholder: "Username", text: dummydata.username }, { placeholder: "E-mail", text: dummydata.email }, { placeholder: "Age", text: dummydata.age }])
                 cy.wrap(smartTable).find('.nb-checkmark').click()
 
-                // verify data 
                 cy.wrap(smartTable).find('tbody tr').first().then(() => {
                     table.verifyInsertedRowByColumnIndex([{ index: 1, text: dummydata.id }, { index: 2, text: dummydata.firstname }, { index: 3, text: dummydata.lastname },
                     { index: 4, text: dummydata.username }, { index: 5, text: dummydata.email }, { index: 6, text: dummydata.age }])
@@ -50,10 +45,8 @@ describe('tables', () => {
         })
     })
 
-    it.only('update row data by ID', () => {
+    it('update row data by ID', () => {
         cy.get('@data').then((dummydata: any) => {
-            //update and verify
-            //by id
             table.updateRowByID("3", [{ placeholder: "First Name", text: dummydata.firstname }, { placeholder: "Last Name", text: dummydata.lastname },
             { placeholder: "Username", text: dummydata.username }, { placeholder: "E-mail", text: dummydata.email }, { placeholder: "Age", text: dummydata.age }])
 
@@ -74,7 +67,6 @@ describe('tables', () => {
 
             table.getTable('Smart Table').find('tbody tr').each((row) => {
                 if (age < 100) {
-                    // find by placeholder
                     cy.wrap(row).find('td').eq(6).should('contain', age)
                 } else {
                     cy.wrap(row).should('contain', 'No data found')
