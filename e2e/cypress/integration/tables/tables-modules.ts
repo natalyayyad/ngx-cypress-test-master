@@ -13,25 +13,18 @@ export class Tables {
     getInputFilterElements(elements: InputElementPlaceHolder[]) {
         elements.forEach(element => {
             this.getColumnByPlaceHolder(element.placeholder).eq(0).type(element.text)
-            //let ele = cy.get('input-filter').eq(element.index).find('input').eq(0)
-            //ele.type(element.text)
         })
-
     }
 
     fillRowByColumnPlaceHolder(elements: InputElementPlaceHolder[]) {
         elements.forEach(element => {
             this.getColumnByPlaceHolder(element.placeholder).eq(1).type(element.text)
-            //let ele = cy.get('input-editor').eq(element.index).find('input').eq(0)
-            //ele.type(element.text)
         })
     }
 
     fillRowByColumnPlaceHolderWithClear(elements: InputElementPlaceHolder[]) {
         elements.forEach(element => {
             this.getColumnByPlaceHolder(element.placeholder).eq(1).clear().type(element.text)
-            //let ele = cy.get('input-editor').eq(element.index).find('input').eq(0).clear({ force: true })
-            //ele.type(element.text)
         })
     }
 
@@ -57,11 +50,7 @@ export class Tables {
         table.getTable('Smart Table').find('tbody tr').each((row) => {
             cy.log(row + "")
             cy.wrap(row).find('td').eq(1).invoke('text').then(data => {
-                //cy.log(data)
                 if (data == placeholder) {
-                    //expect(data).to.equals(placeholder);
-
-                    //cy.get('tbody tr').eq(3).find('.nb-edit').click()
                     cy.wrap(row).find('.nb-edit').click()
                     this.fillRowByColumnPlaceHolderWithClear(elements)
                     cy.wrap(row).find('.nb-checkmark').click()
@@ -70,21 +59,8 @@ export class Tables {
                 }
             })
         })
-
-        // this.getTable('Smart Table').find('tbody tr').eq(index).within((row) => {
-        //     cy.wrap(row).find('.nb-edit').click({ force: true })
-        //     this.getInputEditorElementsClear(elements)
-        //     cy.wrap(row).find('.nb-checkmark').click({ force: true })
-
-        // })
-
-        // this.getTable('Smart Table').find('tbody tr').first().then((frstRow) => {
-        //     this.verifyInsertedRowByColumnIndex(elements)
-        // })
-
     }
 
-    //delete by ID
     deleteRowByIndex(index: number) {
         const stub = cy.stub();
         cy.on('window:confirm', stub);
