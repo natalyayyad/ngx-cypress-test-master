@@ -1,68 +1,87 @@
 /// <reference types="cypress" />
-import { InputElement } from "../General-Interfaces";
+import { InputElement, InputElementPlaceHolder } from "../General-Interfaces";
 export class Tables {
 
     getTable(header: string) {
         return cy.get('nb-card-header').contains(header).parent()
     }
 
-    getInputFilterElements(elements: InputElement[]) {
+    getColumnByPlaceHolder(placeholder: string) {
+        return cy.get(`input[placeholder="${placeholder}"]`)
+    }
+
+    getInputFilterElements(elements: InputElementPlaceHolder[]) {
         elements.forEach(element => {
-            let ele = cy.get('input-filter').eq(element.index).find('input').eq(0)
-            ele.type(element.text)
+            this.getColumnByPlaceHolder(element.placeholder).eq(0).type(element.text)
+            //let ele = cy.get('input-filter').eq(element.index).find('input').eq(0)
+            //ele.type(element.text)
         })
 
     }
 
-    getInputEditorElements(elements: InputElement[]) {
+    fillRowByColumnPlaceHolder(elements: InputElementPlaceHolder[]) {
         elements.forEach(element => {
-            let ele = cy.get('input-editor').eq(element.index).find('input').eq(0)
-            ele.type(element.text, { force: true })
+            this.getColumnByPlaceHolder(element.placeholder).eq(1).type(element.text)
+            //let ele = cy.get('input-editor').eq(element.index).find('input').eq(0)
+            //ele.type(element.text)
         })
     }
 
-    getInputEditorElementsClear(elements: InputElement[]) {
+    fillRowByColumnPlaceHolderWithClear(elements: InputElementPlaceHolder[]) {
         elements.forEach(element => {
-            let ele = cy.get('input-editor').eq(element.index).find('input').eq(0).clear({ force: true })
-            ele.type(element.text, { force: true })
+            this.getColumnByPlaceHolder(element.placeholder).eq(1).clear().type(element.text)
+            //let ele = cy.get('input-editor').eq(element.index).find('input').eq(0).clear({ force: true })
+            //ele.type(element.text)
         })
     }
 
-    verifyInsertedRow(row: any, elements: InputElement[]) {
+    verifyInsertedRowByColumnIndex(elements: InputElement[]) {
         elements.forEach(element => {
-            // cy.wrap(row).find('td').eq(element.index).then(data => {
-            //     expect(data.val()).to.equals(element.text)
-            // })
-            cy.wrap(row).find('td').eq(element.index).should('contain', element.text)
-
-            //cy.wrap(row).find('td').eq(element.index).should('contain', element.text)
+            cy.get('td').eq(element.index).should('contain', element.text)
         })
 
     }
 
-    updateRowByIndex(index: number, elements: InputElement[]) {
-        this.getTable('Smart Table').find('tbody tr').eq(index).within((row) => {
-            cy.wrap(row).find('.nb-edit').click({ force: true })
-            this.getInputEditorElementsClear(elements)
-            cy.wrap(row).find('.nb-checkmark').click({ force: true })
+    assertValue(elements: InputElement[]) {
+        elements.forEach(element => {
+            cy.get('input').eq(element.index).then(data => {
+                expect(data.val()).to.equals(element.text)
+            })
+        })
+    }
 
+    updateRowByID(placeholder: string, elements: InputElementPlaceHolder[]) {
+        this.getColumnByPlaceHolder("ID").type(placeholder)
+        var index: number = +placeholder;
+        table.getTable('Smart Table').find('tbody tr').each((row) => {
+            let here = row
+            cy.wrap(row).find('td').eq(1).invoke('text').then(data => {
+                cy.log(data)
+                if (data == placeholder) {
+                    //expect(data).to.equals(placeholder);
+                    cy.wrap(here).find('.nb-edit').click()
+                    this.fillRowByColumnPlaceHolderWithClear(elements)
+                    cy.wrap(row).find('.nb-checkmark').click()
+                    this.getColumnByPlaceHolder("ID").clear()
+                    return false;
+                }
+            })
         })
 
-        // const elements2 = elements.map(function (e) {
-        //     e.index += 1
-        //     return e
+        // this.getTable('Smart Table').find('tbody tr').eq(index).within((row) => {
+        //     cy.wrap(row).find('.nb-edit').click({ force: true })
+        //     this.getInputEditorElementsClear(elements)
+        //     cy.wrap(row).find('.nb-checkmark').click({ force: true })
+
         // })
-        // this.getTable('Smart Table').within((smartTable) => {
-        //     cy.wrap(smartTable).find('tbody tr').first().then((firstRow) => {
-        //         this.verifyInsertedRow(firstRow, elements2)
-        //     })
+
+        // this.getTable('Smart Table').find('tbody tr').first().then((frstRow) => {
+        //     this.verifyInsertedRowByColumnIndex(elements)
         // })
-        this.getTable('Smart Table').find('tbody tr').first().then((firstRow) => {
-            this.verifyInsertedRow(firstRow, elements)
-        })
 
     }
 
+    //delete by ID
     deleteRowByIndex(index: number) {
         const stub = cy.stub();
         cy.on('window:confirm', stub);
@@ -72,4 +91,4 @@ export class Tables {
     }
 }
 
-export const Table = new Tables()
+export const table = new Tables()
